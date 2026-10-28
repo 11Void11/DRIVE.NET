@@ -1,0 +1,33 @@
+# Safe Cruise -- pinned to the versions that produced safe_cruise_eval.json.
+# Install into the iCloud-excluded environment:
+#     uv pip install --python .venv.nosync/bin/python -r requirements.txt
+# or:
+#     .venv.nosync/bin/pip install -r requirements.txt
+#
+# Python 3.14.7 (Homebrew python@3.14) is the interpreter these wheels were
+# resolved against.
+
+# --- serving -----------------------------------------------------------------
+fastapi==0.141.1
+uvicorn==0.52.4
+pydantic==2.13.4
+
+# --- model + explainability --------------------------------------------------
+xgboost==3.4.1
+shap==0.52.0
+scikit-learn==1.9.0
+joblib==1.5.3
+
+# --- data --------------------------------------------------------------------
+pandas==3.0.5
+numpy==2.5.2
+
+# --- dashboard ---------------------------------------------------------------
+streamlit==1.62.0
+altair==6.2.2
+
+# Optional: train_full_model.py writes a PNG confusion matrix when matplotlib is
+# importable and silently skips it otherwise. Left unpinned because no matplotlib
+# build is currently installed here, so there is no known-good cp314 wheel to
+# pin to -- let the resolver choose one.
+matplotlib>=3.10

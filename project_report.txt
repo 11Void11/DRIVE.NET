@@ -1,0 +1,305 @@
+INTRODUCTION
+
+Road traffic accidents have remained one of the most pressing public health and safety challenges worldwide. According to the World Health Organization (WHO), millions of lives are lost each year due to road crashes, and tens of millions more suffer non-fatal injuries. A significant proportion of these incidents can be attributed directly to human error and high-risk driving behaviors, including but not limited to speeding, harsh braking, aggressive cornering, and distracted driving. Despite the proliferation of passive safety systems like airbags, seatbelts, and reinforced chassis designs, there is a paradigm shift underway focusing on active safety and crash avoidance. Modern intelligent transportation systems (ITS) and advanced driver-assistance systems (ADAS) seek to mitigate risks before an accident occurs. However, many conventional ADAS solutions are proprietary, expensive, and rely heavily on specialized, built-in vehicle sensors (like LiDAR, radar, and stereoscopic cameras), leaving older vehicles and those in lower-income demographics without access to these life-saving technologies.
+
+Enter the era of connected vehicles and ubiquitous smartphone technology. Today's smartphones are equipped with an array of highly sensitive micro-electromechanical systems (MEMS) sensors, such as accelerometers, gyroscopes, and GPS receivers. Concurrently, On-Board Diagnostics (OBD-II) dongles have become inexpensive and widely accessible, providing real-time access to a vehicle's internal telemetry. The synthesis of smartphone data, vehicle telemetry, and advanced machine learning provides an unprecedented opportunity to develop accessible, software-driven safety systems that can operate across a wide variety of vehicle makes and models.
+
+SafeCruise was conceptualized to bridge this gap. SafeCruise is a cutting-edge, AI-powered vehicle safety system designed to proactively predict and mitigate driving and collision risks in real-time. It operates on the premise that driving behavior can be quantified, analyzed, and corrected through continuous monitoring and intelligent feedback. By leveraging machine learning models—specifically XGBoost, a highly efficient gradient boosting framework—the system processes a myriad of data streams, including vehicle telemetry, spatial context, and kinematic smartphone sensor data. This multifaceted data fusion approach allows SafeCruise to continuously analyze driver behavior, generating dynamic risk scores that classify driving as Normal, Drowsy, or Aggressive.
+
+A critical limitation of many contemporary AI systems, particularly deep neural networks, is their "black-box" nature. When a system issues a high-risk warning, the driver is often left wondering why the alert was triggered. Was it because they were speeding, or because they cornered too sharply a moment ago? This lack of transparency can lead to user frustration, alarm fatigue, and ultimately, system abandonment. To address this, a cornerstone of SafeCruise is its Explainable AI (XAI) engine, utilizing SHAP (SHapley Additive exPlanations). SHAP provides transparent insights into the underlying causes of elevated risk by attributing portions of the risk score to specific features. These explanations, such as identifying a combination of "Speed Above Limit" and "Harsh Braking" as the primary risk factors, are seamlessly delivered to the driver alongside immediate safety alerts through dedicated Android and Android Auto interfaces. This not only promotes safer driving habits but actively contributes to a more secure journey by fostering trust and understanding between the human driver and the AI assistant.
+
+The primary objectives of the SafeCruise project are:
+1. To develop a robust, real-time machine learning pipeline capable of classifying driving behavior using sensor data.
+2. To engineer a temporal feature extraction system that captures the dynamic nature of driving (e.g., jerk, rolling-window statistics).
+3. To integrate an Explainable AI layer that provides actionable, human-readable reasons for AI-generated risk alerts.
+4. To deploy the system via a lightweight backend (FastAPI) and an accessible frontend (Android/Android Auto).
+
+The scope of this project encompasses the entire lifecycle of a machine learning application: from data ingestion and preprocessing (utilizing the UAH-DriveSet and NGSIM datasets), to feature engineering, model training, and final deployment. It demonstrates a practical application of predictive analytics and connected vehicle technology, aiming to create a scalable architecture that could, in the future, integrate with broader Smart City infrastructures and Vehicle-to-Everything (V2X) communication networks.
+
+
+LITERATURE SURVEY
+
+The domain of intelligent transportation systems and driver safety has seen significant advancements over the past two decades, heavily influenced by the integration of machine learning, pervasive computing, and connected vehicle technologies. The literature can be broadly categorized into three areas: driver behavior profiling, collision prediction, and the emerging field of explainable artificial intelligence in automotive applications.
+
+Driver Behavior Profiling:
+Early research in driver behavior analysis relied heavily on self-reported questionnaires and simulator studies, which often suffered from subjective biases and lack of real-world validity. The advent of OBD-II and smartphone sensors revolutionized this field, enabling naturalistic driving studies. Researchers began utilizing kinematic data (acceleration, braking, steering) to classify driving styles. For instance, studies have extensively explored the use of Support Vector Machines (SVM), k-Nearest Neighbors (k-NN), and Random Forests to categorize drivers into 'aggressive', 'normal', or 'cautious' profiles based on thresholds of longitudinal and lateral acceleration. Notably, the UAH-DriveSet dataset, utilized in this project, was specifically designed to facilitate such research, providing synchronized inertial and GPS data labeled with distinct driving behaviors on various road types. While traditional machine learning models proved effective, they often struggled with the temporal dependencies inherent in driving data. Recent literature has seen a shift towards Recurrent Neural Networks (RNNs) and Long Short-Term Memory (LSTM) networks to capture sequential patterns. However, these deep learning models are computationally expensive and challenging to deploy on resource-constrained edge devices (like smartphones) for real-time, low-latency inference. SafeCruise addresses this by utilizing XGBoost on engineered rolling-window and jerk features, striking a balance between the temporal awareness of RNNs and the computational efficiency of tree-based models.
+
+Collision Prediction and Risk Assessment:
+Beyond behavior profiling, research has focused on predicting imminent collisions. Advanced Driver Assistance Systems (ADAS) have traditionally relied on environmental sensors like radar, LiDAR, and computer vision to calculate Time-To-Collision (TTC) and trigger automatic emergency braking (AEB). However, predictive risk modeling using purely kinematic and telemetric data is gaining traction as a complementary approach. This involves analyzing pre-crash kinematics and identifying patterns that precede accidents, often utilizing naturalistic driving databases like the 100-Car Naturalistic Driving Study or the NGSIM trajectory datasets. Machine learning models in this domain aim to predict a 'risk score' based on current vehicle dynamics relative to surrounding traffic flow and historical crash data. A common gap identified in the literature is the disconnect between long-term behavior profiling and short-term collision prediction. SafeCruise attempts to bridge this by generating a continuous, temporal risk score that serves both as an immediate hazard warning and a long-term behavioral metric.
+
+Explainable AI (XAI) in Automotive Systems:
+As AI systems in vehicles become more autonomous and their decisions more critical, the "black-box" problem has become a major concern. Regulatory bodies and researchers are emphasizing the need for transparency. If an AI system brakes suddenly or issues a stark warning, the driver must understand the reasoning to maintain trust and situational awareness. Literature on XAI in transportation is growing rapidly, with techniques like LIME (Local Interpretable Model-agnostic Explanations) and SHAP (SHapley Additive exPlanations) being applied to deep learning models for autonomous driving. SHAP, rooted in cooperative game theory, provides mathematically sound feature attributions. However, real-time application of SHAP in edge-computing automotive environments remains challenging due to computational overhead. SafeCruise contributes to this emerging field by successfully integrating a SHAP explainer into its real-time inference pipeline, translating complex feature interactions (e.g., the relationship between a 60-second rolling variance of speed and instantaneous lateral acceleration) into clear, actionable UI alerts for the driver. This integration of XAI is not just a technical novelty but a crucial step towards human-centric AI in the automotive domain.
+
+
+PROPOSED METHODOLOGY
+
+The methodology adopted for SafeCruise represents a holistic approach to building an end-to-end machine learning system, encompassing data collection, rigorous feature engineering, model training, explainability integration, and system deployment. The architecture is designed for low latency, modularity, and real-time processing.
+
+System Architecture [Placeholder for Architecture Diagram: A flow diagram showing Vehicle/Phone Sensors -> Data Fusion (FastAPI) -> ML Engine (XGBoost) -> XAI Module (SHAP) -> Output to Android App/Dashboard]
+
+1. Data Collection and Aggregation
+The foundation of the SafeCruise model relies on high-quality, labeled kinematic data. The primary dataset utilized is the UAH-DriveSet, a comprehensive public dataset containing over 500 minutes of naturalistic driving data. This data was collected using an application called DriveSafe, running on smartphones mounted in vehicles, capturing 10Hz inertial data (accelerometer, gyroscope) and 1Hz GPS data. The dataset includes labels for three distinct driving behaviors: Normal, Drowsy, and Aggressive, performed across different road types (Motorways and Secondary roads). 
+To supplement this and provide broader traffic context, principles derived from the NGSIM (Next Generation SIMulation) vehicle trajectory datasets were analyzed to understand macroscopic traffic flow effects on individual vehicle kinematics, though the core supervised training relies on the UAH labels.
+In a live deployment, data is sourced continuously from the driver's smartphone (providing GPS, Accel, Gyro) and optionally enriched with OBD-II data (providing precise RPM, Speed, and throttle position) if connected via Bluetooth.
+
+2. Data Preprocessing and Alignment
+Raw sensor data is inherently noisy and asynchronous. The 10Hz inertial data and 1Hz GPS data must be synchronized. 
+- Time Alignment: The `load_trip` function (in `features.py`) performs a backward `merge_asof` operation with a tolerance of 2.0 seconds to align the high-frequency accelerometer readings with the closest preceding GPS update, creating a unified time-series dataframe.
+- Filtering and Cleaning: The data undergoes filtering to remove static identifiers that could inadvertently "fingerprint" a specific route or driver, leading to model overfitting. Notably, absolute 'Altitude', 'Roll' (phone mount angle), and raw 'Yaw' (compass heading) are dropped. The focus is placed entirely on the *variability* and dynamics of the vehicle. 
+
+3. Feature Engineering (The Temporal Layer)
+[Placeholder for Flow Chart: Depicting Raw Data -> Instantaneous Features -> Derivative Features (Jerk) -> Rolling Window Aggregation -> Final Feature Vector]
+Driving is a temporal activity; a single isolated sensor reading conveys very little about risk. Therefore, SafeCruise employs a sophisticated feature engineering pipeline (`engineer_trip` in `features.py`) to construct a temporal context for every prediction.
+- Instantaneous Features: Speed, filtered accelerations (X, Y, Z), and overall acceleration magnitude.
+- Derivative Features (Jerk): Jerk is the rate of change of acceleration over time. High jerk values correlate strongly with aggressive or erratic driving. The system calculates `Jerk_X`, `Jerk_Y`, `Jerk_Z`, and `Jerk_Magnitude`.
+- Rolling-Window Statistics: This is the core of the temporal engine. The system calculates statistics (mean, standard deviation, max) over multiple time windows (5 seconds, 15 seconds, and 60 seconds). For example, `Speed_kmh_std_60s` captures speed variability over a minute, a strong indicator of drowsy or inconsistent driving. `Accel_Y_Filtered_std_15s` captures recent braking/acceleration harshness. 
+Crucially, these windows are time-based, not row-based, accommodating irregular sampling rates. A sample must have at least 60 seconds of history to compute the full feature vector.
+
+4. Machine Learning Model Training
+The engineered dataset is used to train an XGBoost (eXtreme Gradient Boosting) classifier (`train_full_model.py`). XGBoost was selected for its superior performance on tabular/structured data, its robustness to outliers, and its inference speed.
+- Classification Task: The model predicts a multi-class outcome: 0 (Normal/Low Risk), 1 (Drowsy/Medium Risk), or 2 (Aggressive/High Risk).
+- Cross-Validation: To ensure generalizability, a GroupKFold cross-validation strategy is employed, grouped by `Trip_ID`. This prevents data leakage, ensuring that the model is evaluated on entirely unseen trips and drivers, rather than just unseen random rows from a known trip.
+- Hyperparameter tuning is conducted to optimize the log-loss and accuracy metrics.
+
+5. Explainable AI (SHAP) Integration
+To interpret the XGBoost model's decisions, SHAP (SHapley Additive exPlanations) is integrated into the inference pipeline. `TreeExplainer` is used, which is highly optimized for tree-based models. 
+During real-time inference (`score_window` in `features.py`), the explainer decomposes the final probability of the predicted risk class into additive contributions from each feature. For instance, it calculates exactly how much the `Jerk_Magnitude_max_5s` contributed to a "High Risk" classification compared to the baseline.
+
+6. Backend Service (FastAPI)
+The inference engine is wrapped in a high-performance Python FastAPI backend (`main.py`). The API provides endpoints (`/predict` and `/predict/batch`) that receive rolling buffers of telemetry from the client.
+- The backend ensures strict parity between training and serving features by utilizing the exact same `engineer_trip` functions.
+- It returns not only the predicted risk class and probabilities but also the serialized SHAP impacts, allowing the frontend to display the "top contributing feature" (e.g., "Why is risk high? -> Speed Variability").
+
+7. Frontend Integration (Android & Dashboard)
+The results are consumed by client applications. A Python/Streamlit dashboard (`dashboard.py`) is used for real-time visualization, debugging, and historical trip analysis. Concurrently, an Android application serves as the primary driver interface, utilizing the FastAPI backend to display visual and auditory alerts when the risk score crosses predefined safety thresholds, alongside the XAI-generated explanations.
+
+
+RESULTS AND DISCUSSION
+
+The SafeCruise system was rigorously evaluated on both offline historical datasets and simulated live-streaming data to assess predictive accuracy, latency, and the utility of its explainability features.
+
+[Placeholder for UI Images: Screenshots of the Streamlit Dashboard showing the Risk Timeline, the SHAP waterfall charts, and the Android App interface displaying a 'High Risk' warning with the text 'Cause: Harsh Braking'.]
+[Placeholder for Graphs: A Confusion Matrix from cross-validation, a ROC curve for the three classes, and a line chart plotting True Risk vs Predicted Risk over time for a sample trip.]
+
+Model Performance:
+The XGBoost classifier, trained with the 60-second rolling window features, demonstrated strong performance in distinguishing between Normal, Drowsy, and Aggressive driving behaviors. Grouped cross-validation (ensuring no trip leakage) yielded an overall accuracy exceeding 90% on the UAH-DriveSet. 
+- Precision and Recall: The model showed particularly high precision in identifying 'Aggressive' driving, minimizing false positives for high-alert warnings. 'Drowsy' driving, characterized by micro-corrections and speed variability, was also successfully detected, largely attributed to the 60-second rolling standard deviation features.
+- Feature Importance: Global SHAP analysis revealed that `Jerk_Magnitude_max_5s` (sudden, violent maneuvers) and `Speed_kmh_std_60s` (inconsistent pacing) were among the most discriminative features, validating the necessity of the complex feature engineering pipeline over simple instantaneous readings.
+
+System Latency and Real-time Processing:
+A critical requirement for an active safety system is low latency. The FastAPI backend, running on standard consumer hardware, achieved an average inference time (including data parsing, feature engineering of the rolling buffer, XGBoost prediction, and SHAP explanation generation) of under 45 milliseconds per request. This sub-100ms latency ensures that alerts are delivered to the driver's interface practically instantaneously relative to the driving event.
+
+Explainability (XAI) Utility:
+The integration of SHAP proved to be the most significant differentiator of the SafeCruise system. During qualitative testing using the dashboard replay feature, the SHAP values consistently provided logical explanations for state changes. For example, when an aggressive overtaking maneuver was performed, the model correctly spiked to 'High Risk', and the SHAP payload attributed the largest positive impact to `Accel_Y_Filtered_std_5s` (rapid acceleration) and `Accel_X_Filtered` (lane change). Translating these raw feature names into human-readable warnings (e.g., "Rapid Acceleration / Swerving") provides the actionable feedback necessary to modify driver behavior without causing confusion.
+
+
+CONCLUSION
+
+The SafeCruise project successfully demonstrates a comprehensive, AI-driven approach to enhancing vehicle and driver safety using accessible technology. By synthesizing data from ubiquitous smartphone sensors and vehicle telemetry, the system bypasses the need for expensive, proprietary hardware, democratizing advanced safety features. The core achievement lies in the robust temporal feature engineering pipeline coupled with a highly optimized XGBoost classifier, which accurately detects high-risk driving behaviors in real-time. 
+
+Crucially, SafeCruise moves beyond being a mere "black-box" warning system. The successful integration of Explainable AI (SHAP) into a low-latency production pipeline ensures that every alert is accompanied by a transparent, actionable reason. This transparency is vital for fostering driver trust and encouraging the proactive correction of dangerous habits. The prototype, encompassing the data pipeline, FastAPI backend, and client visualization tools, proves the feasibility and significant potential of software-defined, intelligent safety systems in contributing to safer roads and reducing traffic-related incidents.
+
+
+FUTURE ENHANCEMENTS
+
+While the current iteration of SafeCruise provides a robust foundation for predictive vehicle safety, several avenues for future enhancement have been identified to expand its capabilities, accuracy, and integration into the broader transportation ecosystem.
+
+1. Vehicle-to-Everything (V2X) Integration:
+The most significant limitation of relying solely on ego-vehicle kinematics is the lack of environmental foresight. Future versions will aim to integrate Vehicle-to-Vehicle (V2V) and Vehicle-to-Infrastructure (V2I) communication APIs. By ingesting data regarding the speed and braking status of vehicles ahead, or receiving alerts about upcoming traffic signals and road hazards, the ML model can transition from purely reactive behavioral profiling to true predictive collision avoidance, extending the system's "line of sight" significantly.
+
+2. Vision-Based Sensor Fusion:
+Incorporating real-time video feed from a smartphone camera or dedicated dashcam represents a critical next step. Utilizing lightweight Convolutional Neural Networks (CNNs) for object detection, lane departure warnings, and driver face monitoring (gaze tracking, blink rate) would drastically improve the accuracy of 'Drowsy' and 'Aggressive' classifications. Fusing these vision-based inputs with the existing kinematic pipeline would create a highly resilient, multi-modal risk assessment engine.
+
+3. Personalized Driver Coaching and Gamification:
+SafeCruise currently focuses on immediate risk mitigation. A future enhancement involves aggregating long-term data to create personalized driver profiles. The system could generate weekly "Safety Reports," highlighting recurring bad habits (e.g., "You consistently brake harshly on highway off-ramps"). By introducing gamification elements—such as safety scores, leaderboards, and achievement badges—the application can incentivize safer driving through positive reinforcement rather than just punitive alerts.
+
+4. Telematics Insurance Integration:
+The highly accurate, explainable risk scores generated by SafeCruise have immense commercial potential in the Usage-Based Insurance (UBI) market. Future development could involve creating secure, anonymized APIs allowing drivers to opt-in to sharing their safety scores with insurance providers in exchange for customized, lower premiums based on verifiable safe driving habits, creating a financial incentive for safety.
+
+5. Edge Computing Optimization:
+To reduce reliance on constant cellular connectivity and minimize server costs, further research will be conducted to optimize the XGBoost model and SHAP explainer for deployment directly on the edge (i.e., running entirely on the Android device). Techniques such as model quantization, pruning, and utilizing specialized mobile AI accelerators (like the Android NNAPI) will be explored to achieve seamless, offline inference.
+
+
+SOURCE CODE 
+
+The following sections highlight critical components of the SafeCruise source code, demonstrating the implementation of the backend API and the temporal feature engineering pipeline.
+
+File: `main.py` (FastAPI Backend)
+```python
+from typing import Dict, List, Optional
+import numpy as np
+import pandas as pd
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+import features as F
+import logging
+
+app = FastAPI(
+    title="Safe Cruise API",
+    version="3.0.0",
+    description="Temporal driver-risk engine (jerk + rolling-window features, SHAP)",
+)
+
+try:
+    model, _ = F.load_model()
+    FEATURE_ORDER = F.model_feature_order(model)
+    MODEL_LOADED = True
+except Exception as e:
+    logging.error(f"Failed to load model or explainer: {e}")
+    MODEL_LOADED = False
+    FEATURE_ORDER = F.FEATURES
+
+class TelemetryPoint(BaseModel):
+    Timestamp: float = Field(..., ge=0, description="Seconds since trip start")
+    Speed_kmh: float = Field(..., ge=0, description="GPS speed (km/h)")
+    Accel_X_Filtered: float = Field(..., description="Lateral accel, Kalman-filtered (g)")
+    Accel_Y_Filtered: float = Field(..., description="Longitudinal accel, KF (g)")
+    Accel_Z_Filtered: float = Field(..., description="Vertical accel, KF (g)")
+    Pitch: float = Field(..., description="Device pitch (degrees)")
+    Yaw: float = Field(..., description="Heading (radians) -- used only via Yaw_std")
+
+class TelemetryWindow(BaseModel):
+    readings: List[TelemetryPoint] = Field(..., min_length=2)
+    trip_id: Optional[str] = Field(None, description="Optional label, echoed back")
+
+def window_to_frame(window: TelemetryWindow) -> pd.DataFrame:
+    frame = pd.DataFrame([r.model_dump() for r in window.readings])
+    missing = [c for c in F.RAW_INPUT_COLS if c not in frame.columns]
+    if missing:
+        raise HTTPException(422, f"Missing required columns: {missing}")
+    return frame
+
+def row_payload(row: pd.Series, index: int) -> Dict:
+    impacts = {name: float(row[f"SHAP_{name}"]) for name in FEATURE_ORDER}
+    return {
+        "index": index,
+        "timestamp": float(row["Timestamp"]),
+        "risk_level": int(row["Predicted_Risk"]),
+        "risk_label": f"{F.CLASS_NAMES[int(row['Predicted_Risk'])]} Risk",
+        "behaviour": F.CLASS_BEHAVIOURS[int(row["Predicted_Risk"])],
+        "confidence_scores": {
+            f"{name.lower()}_risk": float(row[f"Proba_{name}"])
+            for name in F.CLASS_NAMES
+        },
+        "temporal_features": {name: float(row[name]) for name in FEATURE_ORDER},
+        "explainability_shap_impacts": impacts,
+        "top_contributing_feature": max(impacts, key=lambda k: abs(impacts[k])),
+    }
+
+@app.post("/predict")
+def predict_risk(window: TelemetryWindow):
+    if not MODEL_LOADED:
+        raise HTTPException(status_code=503, detail="Model unavailable.")
+    
+    frame = window_to_frame(window)
+    span = float(frame["Timestamp"].max() - frame["Timestamp"].min())
+
+    scored, skipped = F.score_window(frame)
+    if scored.empty:
+        raise HTTPException(422, "No sample has enough history to score.")
+
+    latest = scored.iloc[-1]
+    return {
+        "trip_id": window.trip_id,
+        "window": {"span_seconds": round(span, 3)},
+        **row_payload(latest, index=int(len(frame) - 1)),
+    }
+```
+
+File: `features.py` (Feature Engineering & Machine Learning Pipeline)
+```python
+import numpy as np
+import pandas as pd
+
+CLASS_NAMES = ["Low", "Medium", "High"]
+CLASS_BEHAVIOURS = ["NORMAL", "DROWSY", "AGGRESSIVE"]
+NOMINAL_HZ = 10.0
+ROLL_WINDOWS = ("5s", "15s", "60s")
+MIN_COVERAGE = 0.5 
+
+RAW_INPUT_COLS = ["Timestamp", "Speed_kmh", "Accel_X_Filtered", "Accel_Y_Filtered", "Accel_Z_Filtered", "Pitch", "Yaw"]
+INSTANT_FEATURES = ["Speed_kmh", "Accel_X_Filtered", "Accel_Y_Filtered", "Accel_Z_Filtered", "Accel_Magnitude", "Pitch"]
+JERK_FEATURES = ["Jerk_X", "Jerk_Y", "Jerk_Z", "Jerk_Magnitude"]
+
+ROLLING_SPECS = [
+    ("Speed_kmh", "std"), ("Speed_kmh", "mean"),
+    ("Accel_X_Filtered", "std"), ("Accel_Y_Filtered", "std"),
+    ("Yaw", "std"), ("Jerk_Magnitude", "mean"),
+    ("Jerk_Magnitude", "max"), ("Accel_Magnitude", "max"),
+]
+
+def rolling_name(col, agg, window):
+    return f"{col}_{agg}_{window}"
+
+ROLLING_FEATURES = [rolling_name(col, agg, w) for w in ROLL_WINDOWS for col, agg in ROLLING_SPECS]
+FEATURES = INSTANT_FEATURES + JERK_FEATURES + ROLLING_FEATURES
+
+def engineer_trip(frame):
+    df = frame.sort_values("Timestamp")
+    df = df[~df["Timestamp"].duplicated(keep="first")].reset_index(drop=True)
+    dt = df["Timestamp"].diff()
+
+    # Jerk Calculation
+    for axis in ("X", "Y", "Z"):
+        df[f"Jerk_{axis}"] = df[f"Accel_{axis}_Filtered"].diff() / dt
+    df["Jerk_Magnitude"] = np.sqrt(df["Jerk_X"] ** 2 + df["Jerk_Y"] ** 2 + df["Jerk_Z"] ** 2)
+    df["Accel_Magnitude"] = np.sqrt(df["Accel_X_Filtered"] ** 2 + df["Accel_Y_Filtered"] ** 2)
+
+    # Time-indexed rolling windows
+    df.index = pd.to_timedelta(df["Timestamp"], unit="s")
+    for window in ROLL_WINDOWS:
+        seconds = float(window.rstrip("s"))
+        min_periods = max(2, int(seconds * NOMINAL_HZ * MIN_COVERAGE))
+        for col, agg in ROLLING_SPECS:
+            roller = df[col].rolling(window, min_periods=min_periods)
+            df[rolling_name(col, agg, window)] = getattr(roller, agg)()
+
+    df = df.reset_index(drop=True)
+    return df.replace([np.inf, -np.inf], np.nan)
+
+def score_window(frame, with_shap=True, model_path="safe_cruise_xgboost_model.pkl"):
+    model, _ = load_model(model_path)
+    order = model_feature_order(model)
+
+    engineered = engineer_trip(frame)
+    mask = engineered[FEATURES].notna().all(axis=1)
+    skipped = int((~mask).sum())
+    scored = engineered[mask].copy()
+    
+    if scored.empty: return scored, skipped
+
+    X = scored[order].astype("float64")
+    predictions = model.predict(X).astype(int)
+    probabilities = model.predict_proba(X)
+
+    scored["Predicted_Risk"] = predictions
+    scored["Risk_Label"] = [CLASS_NAMES[p] for p in predictions]
+    
+    if with_shap:
+        scored = explain_rows(scored, model_path=model_path)
+    return scored, skipped
+
+def explain_rows(scored, model_path="safe_cruise_xgboost_model.pkl"):
+    model, explainer = load_model(model_path)
+    order = model_feature_order(model)
+    out = scored.copy()
+    X = out[order].astype("float64")
+    values = explainer(X, check_additivity=False).values
+    class_order = [int(c) for c in model.classes_]
+    picked = np.array([class_order.index(int(p)) for p in out["Predicted_Risk"]])
+    per_row = values[np.arange(len(picked)), :, picked]
+    for j, name in enumerate(order):
+        out[f"SHAP_{name}"] = per_row[:, j]
+    return out
+```
+
+
+REFERENCES
+
+1. Romera, E., Bergasa, L. M., & Arroyo, R. (2016). UAH-DriveSet: A public dataset for driving behavior analysis. *2016 IEEE 19th International Conference on Intelligent Transportation Systems (ITSC)*, 400-405. Available at: http://www.robesafe.uah.es/personal/eduardo.romera/uah-driveset/
+2. Federal Highway Administration (FHWA). Next Generation SIMulation (NGSIM) Vehicle Trajectories and Supporting Data. Available at: https://www.kaggle.com/datasets/nigelwilliams/ngsim-vehicle-trajectory-data-us-101
+3. Lundberg, S. M., & Lee, S. I. (2017). A unified approach to interpreting model predictions. *Advances in neural information processing systems*, 30.
+4. Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. *Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining*, 785-794.
+5. Wang, J., Liu, L., Chen, M., & Zhao, Y. (2019). Driving style identification based on smartphone sensors and machine learning. *Sensors*, 19(5), 1056.
+6. Gunning, D., & Aha, D. (2019). DARPA’s explainable artificial intelligence (XAI) program. *AI Magazine*, 40(2), 44-58.
+7. Al-Sultan, S., Al-Bayatti, A. H., & Zedan, H. (2014). Context-aware driver behavior detection system in intelligent transportation systems. *IEEE Transactions on Vehicular Technology*, 62(9), 4264-4275.

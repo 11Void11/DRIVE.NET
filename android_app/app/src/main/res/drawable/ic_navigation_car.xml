@@ -1,0 +1,43 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Car Outer Shadow / Base Glow -->
+    <path
+        android:fillColor="#3300FF22"
+        android:pathData="M24,2 C15,2 12,12 12,24 C12,36 15,44 24,44 C33,44 36,36 36,24 C36,12 33,2 24,2 Z"/>
+
+    <!-- Car Body (Top View Aerodynamic Sports Car) -->
+    <path
+        android:fillColor="#00E632"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M24,4 C17,8 14,16 14,26 C14,35 17,42 24,42 C31,42 34,35 34,26 C34,16 31,8 24,4 Z"/>
+
+    <!-- Front Windshield -->
+    <path
+        android:fillColor="#111A11"
+        android:pathData="M18,16 Q24,13 30,16 L29,22 Q24,20 19,22 Z"/>
+
+    <!-- Rear Windshield -->
+    <path
+        android:fillColor="#111A11"
+        android:pathData="M19,30 Q24,28 29,30 L28,34 Q24,33 20,34 Z"/>
+
+    <!-- Roof Panel -->
+    <path
+        android:fillColor="#1B221A"
+        android:pathData="M19,23 Q24,21 29,23 L28,29 Q24,28 20,29 Z"/>
+
+    <!-- Front Headlights (Neon Glow) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M16,6 L20,8 L18,10 Z M32,6 L28,8 L30,10 Z"/>
+
+    <!-- Direction Arrow Tip / Front Nose Indicator -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M24,2 L27,7 L21,7 Z"/>
+</vector>

@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="36dp"
+    android:height="36dp"
+    android:viewportWidth="36"
+    android:viewportHeight="36">
+
+    <!-- Green Circle Background -->
+    <path
+        android:fillColor="#102315"
+        android:strokeColor="#00E676"
+        android:strokeWidth="2"
+        android:pathData="M18,18m-16,0a16,16 0,1,1 32,0a16,16 0,1,1 -32,0" />
+
+    <!-- Navigation Arrow pointing North-East -->
+    <path
+        android:fillColor="#00FF66"
+        android:pathData="M24.5,11.5 L14,16.5 L19,19 L21.5,24 Z" />
+</vector>

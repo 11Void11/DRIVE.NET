@@ -1,0 +1,139 @@
+{
+  "model_name": "Drive.Net XGBoost Risk Classifier",
+  "benchmark_comparison": {
+    "LogisticRegression": {
+      "accuracy": 0.5032712350283471,
+      "acc_std": 0.032404477753140065,
+      "f1_macro": 0.47241093652478694
+    },
+    "RandomForest": {
+      "accuracy": 0.5406559154715271,
+      "acc_std": 0.04115202736456097,
+      "f1_macro": 0.5298912246372648
+    },
+    "XGBoost": {
+      "accuracy": 0.5481953455062396,
+      "acc_std": 0.06207950305587339,
+      "f1_macro": 0.5392414905069924
+    }
+  },
+  "leave_one_driver_out": {
+    "overall_accuracy": 0.5859905533660009,
+    "per_driver_accuracy": {
+      "D1": 0.4840207773913809,
+      "D2": 0.6166097156445457,
+      "D3": 0.6314211161740079,
+      "D4": 0.5930872832800059,
+      "D5": 0.685966341473107,
+      "D6": 0.4783465023055356
+    },
+    "confusion_matrix": [
+      [
+        77371,
+        31126,
+        15961
+      ],
+      [
+        37447,
+        51236,
+        6057
+      ],
+      [
+        21478,
+        9680,
+        43717
+      ]
+    ]
+  },
+  "features": [
+    "Speed_kmh",
+    "Accel_X_Filtered",
+    "Accel_Y_Filtered",
+    "Accel_Z_Filtered",
+    "Accel_Magnitude",
+    "Pitch",
+    "Jerk_X",
+    "Jerk_Y",
+    "Jerk_Z",
+    "Jerk_Magnitude",
+    "Speed_kmh_std_5s",
+    "Speed_kmh_mean_5s",
+    "Accel_X_Filtered_std_5s",
+    "Accel_Y_Filtered_std_5s",
+    "Yaw_std_5s",
+    "Jerk_Magnitude_mean_5s",
+    "Jerk_Magnitude_max_5s",
+    "Accel_Magnitude_max_5s",
+    "Speed_kmh_std_15s",
+    "Speed_kmh_mean_15s",
+    "Accel_X_Filtered_std_15s",
+    "Accel_Y_Filtered_std_15s",
+    "Yaw_std_15s",
+    "Jerk_Magnitude_mean_15s",
+    "Jerk_Magnitude_max_15s",
+    "Accel_Magnitude_max_15s",
+    "Speed_kmh_std_60s",
+    "Speed_kmh_mean_60s",
+    "Accel_X_Filtered_std_60s",
+    "Accel_Y_Filtered_std_60s",
+    "Yaw_std_60s",
+    "Jerk_Magnitude_mean_60s",
+    "Jerk_Magnitude_max_60s",
+    "Accel_Magnitude_max_60s"
+  ],
+  "class_names": [
+    "Low",
+    "Medium",
+    "High"
+  ],
+  "top_features": [
+    [
+      "Speed_kmh_mean_60s",
+      0.07830920815467834
+    ],
+    [
+      "Accel_Y_Filtered_std_60s",
+      0.07169627398252487
+    ],
+    [
+      "Jerk_Magnitude_mean_60s",
+      0.06320663541555405
+    ],
+    [
+      "Speed_kmh_std_60s",
+      0.059128474444150925
+    ],
+    [
+      "Speed_kmh_std_5s",
+      0.056730203330516815
+    ],
+    [
+      "Accel_Z_Filtered",
+      0.053310833871364594
+    ],
+    [
+      "Speed_kmh_mean_15s",
+      0.050216447561979294
+    ],
+    [
+      "Yaw_std_60s",
+      0.04635435715317726
+    ],
+    [
+      "Accel_Magnitude_max_60s",
+      0.042511578649282455
+    ],
+    [
+      "Yaw_std_15s",
+      0.04245571047067642
+    ],
+    [
+      "Jerk_Magnitude_max_60s",
+      0.037818681448698044
+    ],
+    [
+      "Accel_X_Filtered_std_60s",
+      0.036426570266485214
+    ]
+  ]
+}

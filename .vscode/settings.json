@@ -1,0 +1,13 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv.nosync/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "files.exclude": {
+    "**/__pycache__": true,
+    ".venv.nosync": true
+  },
+  "search.exclude": {
+    ".venv.nosync": true,
+    "UAH-DRIVESET-v1": true
+  },
+  "java.configuration.updateBuildConfiguration": "interactive"
+}

@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Glowing circular halo -->
+    <path
+        android:fillColor="#4D00FF66"
+        android:pathData="M24,24m-22,0a22,22 0,1,1 44,0a22,22 0,1,1 -44,0" />
+
+    <!-- Inner circle border -->
+    <path
+        android:strokeColor="#8000FF66"
+        android:strokeWidth="1.5"
+        android:fillColor="#00000000"
+        android:pathData="M24,24m-16,0a16,16 0,1,1 32,0a16,16 0,1,1 -32,0" />
+
+    <!-- Directional Navigation Arrow (Points Up / 0 degrees) -->
+    <path
+        android:fillColor="#00FF66"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1"
+        android:pathData="M24,10 L34,32 L24,27 L14,32 Z" />
+</vector>

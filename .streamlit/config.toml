@@ -1,0 +1,17 @@
+# Safe Cruise -- dark theme for the Streamlit widget chrome.
+# dashboard.py styles its own layout, but the built-in widgets (selectbox,
+# slider, tabs, dataframe) take their colours from here.
+[theme]
+base = "dark"
+primaryColor = "#60a5fa"
+backgroundColor = "#0a0b0d"
+secondaryBackgroundColor = "#12141a"
+textColor = "#e9ebee"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
+
+[browser]
+gatherUsageStats = false
